@@ -25,7 +25,8 @@ def crossdown(tradeKline,amaKline):
         return True
     else:
         return False
-
+lossprice = 0
+entryprice = 0
 
     
 while True:
@@ -40,10 +41,12 @@ while True:
             print("目标持仓: 多仓建立",TradeKline.datetime)
             # 设置目标持仓为正数表示多头，负数表示空头，0表示空仓
             target_pos_near.set_target_volume(2)
+            lossprice = min(BigKline.iloc[-1].low,BigKline.iloc[-2].low,BigKline.iloc[-3].low,BigKline.iloc[-4].low,BigKline.iloc[-5].low)
         elif BigKline.iloc[-1].close < BAmaValue.iloc[-1] and crossdown(TradeKline.close,tAmaValue) and position.pos_short_his==0 and position.pos_short_today==0:
             print("目标持仓: 空仓建立",TradeKline.datetime)
             target_pos_near.set_target_volume(-2)
-        elif crossdown(TradeKline.close,tAmaValue) and (position.pos_long_his>0 or position.pos_long_today>0):
+            lossprice = min(BigKline.iloc[-1].low,BigKline.iloc[-2].low,BigKline.iloc[-3].low,BigKline.iloc[-4].low,BigKline.iloc[-5].low)
+        elif lossprice <TradeKline.iloc[-1].close or crossdown(TradeKline.close,tAmaValue) and (position.pos_long_his>0 or position.pos_long_today>0):
             print("目标持仓: 多头平仓",TradeKline.datetime)
             target_pos_near.set_target_volume(0)
         elif crossup(TradeKline.close,tAmaValue) and (position.pos_short_his>0 or position.pos_short_today>0):
